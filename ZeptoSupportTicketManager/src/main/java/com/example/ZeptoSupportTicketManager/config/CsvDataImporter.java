@@ -41,7 +41,7 @@ public class CsvDataImporter implements ApplicationRunner {
         if (resolvedTicketRepository.count() == 0) {
             importResolvedTickets();
         }
-        if (orderRepository.count() == 0) {
+        if (orderRepository.count() == 0 || !orderRepository.existsById(9900L)) {
             importOrders();
         }
         if (newTicketRepository.count() == 0) {
@@ -50,27 +50,27 @@ public class CsvDataImporter implements ApplicationRunner {
     }
 
     private void importResolvedTickets() throws IOException {
-        for (List<String> row : readCsv("data/resolved_tickets.csv")) {
+        for (List<String> row : readCsv("data/resolved_tickets.CSV")) {
             ResolvedTicket ticket = new ResolvedTicket();
-            ticket.setDescription(value(row, "description", 1));
-            ticket.setActionTaken(parseAction(value(row, "action_taken", 2)));
-            ticket.setResolutionNote(value(row, "resolution_note", 3));
-            ticket.setCsat(parseDouble(value(row, "csat", 4)));
+            ticket.setDescription(value(row, "description", 2));
+            ticket.setActionTaken(parseAction(value(row, "resolution_action", 3)));
+            ticket.setResolutionNote(value(row, "resolution_note", 4));
+            ticket.setCsat(parseDouble(value(row, "csat", 6)));
             resolvedTicketRepository.save(ticket);
         }
     }
 
     private void importNewTickets() throws IOException {
-        for (List<String> row : readCsv("data/new_tickets.csv")) {
+        for (List<String> row : readCsv("data/new_tickets.CSV")) {
             NewTicket ticket = new NewTicket();
-            ticket.setDescription(value(row, "description", 1));
+            ticket.setDescription(value(row, "description", 3));
             ticket.setOrderId(parseLong(value(row, "order_id", 2)));
             newTicketRepository.save(ticket);
         }
     }
 
     private void importOrders() throws IOException {
-        for (List<String> row : readCsv("data/orders_context.csv")) {
+        for (List<String> row : readCsv("data/orders_context.CSV")) {
             OrderContext order = new OrderContext();
             order.setId(parseLong(value(row, "id", 0)));
             order.setItems(value(row, "items", 1));
@@ -136,7 +136,11 @@ public class CsvDataImporter implements ApplicationRunner {
         if (value == null || value.isBlank()) {
             return null;
         }
-        return Long.parseLong(value.trim());
+        String digits = value.trim().replaceAll("\\D+", "");
+        if (digits.isBlank()) {
+            return null;
+        }
+        return Long.parseLong(digits);
     }
 
     private Double parseDouble(String value) {
@@ -150,6 +154,11 @@ public class CsvDataImporter implements ApplicationRunner {
         if (value == null || value.isBlank()) {
             return ActionType.NONE;
         }
-        return ActionType.valueOf(value.trim().toUpperCase(Locale.ROOT));
+        return switch (value.trim().toLowerCase(Locale.ROOT)) {
+            case "full_refund", "refund" -> ActionType.REFUND;
+            case "redelivery" -> ActionType.REDELIVERY;
+            case "coupon" -> ActionType.COUPON;
+            default -> ActionType.NONE;
+        };
     }
 }
