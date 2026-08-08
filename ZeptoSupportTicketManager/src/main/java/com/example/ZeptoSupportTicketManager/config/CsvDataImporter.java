@@ -44,9 +44,7 @@ public class CsvDataImporter implements ApplicationRunner {
         if (orderRepository.count() == 0 || !orderRepository.existsById(9900L)) {
             importOrders();
         }
-        if (newTicketRepository.count() == 0) {
-            importNewTickets();
-        }
+        importNewTickets();
     }
 
     private void importResolvedTickets() throws IOException {
@@ -62,9 +60,15 @@ public class CsvDataImporter implements ApplicationRunner {
 
     private void importNewTickets() throws IOException {
         for (List<String> row : readCsv("data/new_tickets.CSV")) {
+            Long orderId = parseLong(value(row, "order_id", 2));
+            String description = value(row, "description", 3);
+            if (orderId == null || description.isBlank()
+                    || newTicketRepository.existsByOrderIdAndDescription(orderId, description)) {
+                continue;
+            }
             NewTicket ticket = new NewTicket();
-            ticket.setDescription(value(row, "description", 3));
-            ticket.setOrderId(parseLong(value(row, "order_id", 2)));
+            ticket.setDescription(description);
+            ticket.setOrderId(orderId);
             newTicketRepository.save(ticket);
         }
     }

@@ -1,6 +1,7 @@
 package com.example.ZeptoSupportTicketManager.controllers;
 
 import com.example.ZeptoSupportTicketManager.dto.CreateTicketRequest;
+import com.example.ZeptoSupportTicketManager.dto.HumanReviewRequest;
 import com.example.ZeptoSupportTicketManager.responses.NewTicketResponse;
 import com.example.ZeptoSupportTicketManager.responses.SimilarTicketResponse;
 import com.example.ZeptoSupportTicketManager.responses.TicketResolutionResponse;
@@ -50,5 +51,21 @@ public class TicketController {
     @PostMapping("/{id}/resolve")
     public TicketResolutionResponse resolveTicket(@PathVariable Long id) {
         return ticketResolutionService.resolveTicket(id);
+    }
+
+    @PostMapping("/resolve-unprocessed")
+    public List<TicketResolutionResponse> resolveUnprocessedTickets() {
+        return ticketResolutionService.resolveUnprocessedTickets();
+    }
+
+    @PostMapping("/{id}/human-review/approve")
+    public TicketResolutionResponse approveHumanReview(@PathVariable Long id) {
+        return ticketResolutionService.approveHumanReview(id);
+    }
+
+    @PostMapping("/{id}/human-review/override")
+    public TicketResolutionResponse overrideHumanReview(@PathVariable Long id,
+            @Valid @RequestBody HumanReviewRequest request) {
+        return ticketResolutionService.overrideHumanReview(id, request);
     }
 }

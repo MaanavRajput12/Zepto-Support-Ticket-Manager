@@ -29,6 +29,8 @@ public class DecisionLogService {
 
     private DecisionLogResponse toResponse(DecisionLog log) {
         return new DecisionLogResponse(log.getId(), log.getTicketId(), log.getConfidence(), log.getDecision(),
-                log.getSelectedAction(), log.getReasoning(), log.getDraftedReply(), log.getCreatedAt());
+                log.getSuggestedAction(), log.getExecutedAction(), log.getActionMessage(), log.getActionAmount(),
+                log.getPrecedentIds(), log.getReviewNote(), log.getReasoning(), log.getDraftedReply(),
+                log.getCreatedAt());
     }
 }

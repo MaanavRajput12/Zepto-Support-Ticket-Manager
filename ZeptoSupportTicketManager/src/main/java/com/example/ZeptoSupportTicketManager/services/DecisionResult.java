@@ -6,13 +6,13 @@ import com.example.ZeptoSupportTicketManager.enums.DecisionType;
 public class DecisionResult {
 
     private final DecisionType decision;
-    private final ActionType selectedAction;
+    private final ActionType suggestedAction;
     private final Double confidence;
     private final String reasoning;
 
-    public DecisionResult(DecisionType decision, ActionType selectedAction, Double confidence, String reasoning) {
+    public DecisionResult(DecisionType decision, ActionType suggestedAction, Double confidence, String reasoning) {
         this.decision = decision;
-        this.selectedAction = selectedAction;
+        this.suggestedAction = suggestedAction;
         this.confidence = confidence;
         this.reasoning = reasoning;
     }
@@ -22,7 +22,11 @@ public class DecisionResult {
     }
 
     public ActionType getSelectedAction() {
-        return selectedAction;
+        return suggestedAction;
+    }
+
+    public ActionType getSuggestedAction() {
+        return suggestedAction;
     }
 
     public Double getConfidence() {

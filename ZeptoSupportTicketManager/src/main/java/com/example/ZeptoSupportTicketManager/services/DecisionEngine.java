@@ -21,7 +21,7 @@ public class DecisionEngine {
 
     public DecisionResult decide(NewTicket ticket, List<SimilarTicketResponse> precedents, OrderContext order) {
         if (precedents == null || precedents.isEmpty()) {
-            return humanReview(0.0, "Escalated because no historical precedents are available for ticket "
+            return humanReview(ActionType.NONE, 0.0, "Escalated because no historical precedents are available for ticket "
                     + ticket.getId() + ".");
         }
 
@@ -42,28 +42,28 @@ public class DecisionEngine {
                 .orElse(ActionType.NONE);
 
         if (topSimilarity < TOP_SIMILARITY_THRESHOLD) {
-            return humanReview(confidence, "Escalated because the best historical match is only "
+            return humanReview(ActionType.NONE, confidence, "Escalated because the best historical match is only "
                     + topSimilarity + "%. Precedents: " + precedentSummary(precedents) + ".");
         }
 
         if (actions.size() > 1) {
-            return humanReview(confidence, "Escalated because historical precedents disagree on the action. "
+            return humanReview(selectedAction, confidence, "Escalated because historical precedents disagree on the action. "
                     + "Observed actions: " + actions + ". Precedents: " + precedentSummary(precedents) + ".");
         }
 
         if (!EnumSet.of(ActionType.REFUND, ActionType.REDELIVERY, ActionType.COUPON).contains(selectedAction)) {
-            return humanReview(confidence, "Escalated because the agreed historical action is " + selectedAction
+            return humanReview(selectedAction, confidence, "Escalated because the agreed historical action is " + selectedAction
                     + ", so no automatic customer action is safe. Precedents: " + precedentSummary(precedents) + ".");
         }
 
         if (!isActionCompatible(selectedAction, order)) {
-            return humanReview(confidence, "Escalated because " + selectedAction + " is not safe for order "
+            return humanReview(selectedAction, confidence, "Escalated because " + selectedAction + " is not safe for order "
                     + order.getId() + " with status " + order.getStatus() + ". Precedents: "
                     + precedentSummary(precedents) + ".");
         }
 
         if (confidence < HIGH_CONFIDENCE_THRESHOLD) {
-            return humanReview(confidence, "Escalated because confidence " + confidence
+            return humanReview(selectedAction, confidence, "Escalated because confidence " + confidence
                     + "% is below the auto-resolution threshold. Precedents: " + precedentSummary(precedents) + ".");
         }
 
@@ -74,7 +74,7 @@ public class DecisionEngine {
         return new DecisionResult(DecisionType.AUTO_RESOLVED, selectedAction, confidence, reasoning);
     }
 
-    private boolean isActionCompatible(ActionType action, OrderContext order) {
+    public boolean isActionCompatible(ActionType action, OrderContext order) {
         if (action == ActionType.REDELIVERY && order.getStatus() != null
                 && order.getStatus().toUpperCase(Locale.ROOT).contains("CANCEL")) {
             return false;
@@ -82,8 +82,8 @@ public class DecisionEngine {
         return true;
     }
 
-    private DecisionResult humanReview(double confidence, String reasoning) {
-        return new DecisionResult(DecisionType.HUMAN_REVIEW, ActionType.NONE, round(confidence), reasoning);
+    private DecisionResult humanReview(ActionType suggestedAction, double confidence, String reasoning) {
+        return new DecisionResult(DecisionType.HUMAN_REVIEW, suggestedAction, round(confidence), reasoning);
     }
 
     private String precedentSummary(List<SimilarTicketResponse> precedents) {

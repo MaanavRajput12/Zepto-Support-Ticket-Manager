@@ -37,7 +37,7 @@ class DecisionEngineTest {
                 precedent(3L, 28.0, ActionType.REFUND)), deliveredOrder);
 
         assertThat(result.getDecision()).isEqualTo(DecisionType.HUMAN_REVIEW);
-        assertThat(result.getSelectedAction()).isEqualTo(ActionType.NONE);
+        assertThat(result.getSuggestedAction()).isEqualTo(ActionType.NONE);
     }
 
     @Test
@@ -61,7 +61,7 @@ class DecisionEngineTest {
                 precedent(3L, 88.0, ActionType.REDELIVERY)), cancelledOrder);
 
         assertThat(result.getDecision()).isEqualTo(DecisionType.HUMAN_REVIEW);
-        assertThat(result.getSelectedAction()).isEqualTo(ActionType.NONE);
+        assertThat(result.getSuggestedAction()).isEqualTo(ActionType.REDELIVERY);
         assertThat(result.getReasoning()).contains("not safe");
     }
 

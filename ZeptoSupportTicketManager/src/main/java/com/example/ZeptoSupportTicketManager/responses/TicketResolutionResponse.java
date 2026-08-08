@@ -8,22 +8,31 @@ public class TicketResolutionResponse {
 
     private Long ticketId;
     private String description;
+    private Long orderId;
+    private OrderContextResponse order;
     private DecisionType decision;
     private Double confidence;
+    private ActionType suggestedAction;
     private ActionType selectedAction;
+    private ActionType executedAction;
     private ActionResult actionResult;
     private List<SimilarTicketResponse> topPrecedents;
     private String reasoning;
     private String draftedReply;
 
-    public TicketResolutionResponse(Long ticketId, String description, DecisionType decision, Double confidence,
-            ActionType selectedAction, ActionResult actionResult, List<SimilarTicketResponse> topPrecedents,
-            String reasoning, String draftedReply) {
+    public TicketResolutionResponse(Long ticketId, String description, Long orderId, OrderContextResponse order,
+            DecisionType decision, Double confidence, ActionType suggestedAction, ActionType executedAction,
+            ActionResult actionResult, List<SimilarTicketResponse> topPrecedents, String reasoning,
+            String draftedReply) {
         this.ticketId = ticketId;
         this.description = description;
+        this.orderId = orderId;
+        this.order = order;
         this.decision = decision;
         this.confidence = confidence;
-        this.selectedAction = selectedAction;
+        this.suggestedAction = suggestedAction;
+        this.selectedAction = suggestedAction;
+        this.executedAction = executedAction;
         this.actionResult = actionResult;
         this.topPrecedents = topPrecedents;
         this.reasoning = reasoning;
@@ -38,6 +47,14 @@ public class TicketResolutionResponse {
         return description;
     }
 
+    public Long getOrderId() {
+        return orderId;
+    }
+
+    public OrderContextResponse getOrder() {
+        return order;
+    }
+
     public DecisionType getDecision() {
         return decision;
     }
@@ -46,8 +63,16 @@ public class TicketResolutionResponse {
         return confidence;
     }
 
+    public ActionType getSuggestedAction() {
+        return suggestedAction;
+    }
+
     public ActionType getSelectedAction() {
         return selectedAction;
+    }
+
+    public ActionType getExecutedAction() {
+        return executedAction;
     }
 
     public ActionResult getActionResult() {

@@ -6,4 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface DecisionLogRepository extends JpaRepository<DecisionLog, Long> {
     Optional<DecisionLog> findTopByTicketIdOrderByCreatedAtDesc(Long ticketId);
+
+    boolean existsByTicketId(Long ticketId);
 }

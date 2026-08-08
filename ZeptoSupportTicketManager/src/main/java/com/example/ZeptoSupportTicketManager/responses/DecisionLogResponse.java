@@ -10,18 +10,31 @@ public class DecisionLogResponse {
     private Long ticketId;
     private Double confidence;
     private DecisionType decision;
+    private ActionType suggestedAction;
     private ActionType selectedAction;
+    private ActionType executedAction;
+    private String actionMessage;
+    private Double actionAmount;
+    private String precedentIds;
+    private String reviewNote;
     private String reasoning;
     private String draftedReply;
     private LocalDateTime createdAt;
 
     public DecisionLogResponse(Long id, Long ticketId, Double confidence, DecisionType decision,
-            ActionType selectedAction, String reasoning, String draftedReply, LocalDateTime createdAt) {
+            ActionType suggestedAction, ActionType executedAction, String actionMessage, Double actionAmount,
+            String precedentIds, String reviewNote, String reasoning, String draftedReply, LocalDateTime createdAt) {
         this.id = id;
         this.ticketId = ticketId;
         this.confidence = confidence;
         this.decision = decision;
-        this.selectedAction = selectedAction;
+        this.suggestedAction = suggestedAction;
+        this.selectedAction = suggestedAction;
+        this.executedAction = executedAction;
+        this.actionMessage = actionMessage;
+        this.actionAmount = actionAmount;
+        this.precedentIds = precedentIds;
+        this.reviewNote = reviewNote;
         this.reasoning = reasoning;
         this.draftedReply = draftedReply;
         this.createdAt = createdAt;
@@ -43,8 +56,32 @@ public class DecisionLogResponse {
         return decision;
     }
 
+    public ActionType getSuggestedAction() {
+        return suggestedAction;
+    }
+
     public ActionType getSelectedAction() {
         return selectedAction;
+    }
+
+    public ActionType getExecutedAction() {
+        return executedAction;
+    }
+
+    public String getActionMessage() {
+        return actionMessage;
+    }
+
+    public Double getActionAmount() {
+        return actionAmount;
+    }
+
+    public String getPrecedentIds() {
+        return precedentIds;
+    }
+
+    public String getReviewNote() {
+        return reviewNote;
     }
 
     public String getReasoning() {

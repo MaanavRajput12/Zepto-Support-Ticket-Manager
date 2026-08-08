@@ -32,8 +32,27 @@ public class DecisionLog {
     private DecisionType decision;
 
     @Enumerated(EnumType.STRING)
+    @Column
+    private ActionType suggestedAction;
+
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private ActionType selectedAction;
+
+    @Enumerated(EnumType.STRING)
+    @Column
+    private ActionType executedAction;
+
+    @Column(columnDefinition = "TEXT")
+    private String actionMessage;
+
+    private Double actionAmount;
+
+    @Column(columnDefinition = "TEXT")
+    private String precedentIds;
+
+    @Column(columnDefinition = "TEXT")
+    private String reviewNote;
 
     @Column(columnDefinition = "TEXT", nullable = false)
     private String reasoning;
@@ -89,6 +108,56 @@ public class DecisionLog {
 
     public void setSelectedAction(ActionType selectedAction) {
         this.selectedAction = selectedAction;
+        this.suggestedAction = selectedAction;
+    }
+
+    public ActionType getSuggestedAction() {
+        return suggestedAction == null ? selectedAction : suggestedAction;
+    }
+
+    public void setSuggestedAction(ActionType suggestedAction) {
+        this.suggestedAction = suggestedAction;
+        this.selectedAction = suggestedAction;
+    }
+
+    public ActionType getExecutedAction() {
+        return executedAction;
+    }
+
+    public void setExecutedAction(ActionType executedAction) {
+        this.executedAction = executedAction;
+    }
+
+    public String getActionMessage() {
+        return actionMessage;
+    }
+
+    public void setActionMessage(String actionMessage) {
+        this.actionMessage = actionMessage;
+    }
+
+    public Double getActionAmount() {
+        return actionAmount;
+    }
+
+    public void setActionAmount(Double actionAmount) {
+        this.actionAmount = actionAmount;
+    }
+
+    public String getPrecedentIds() {
+        return precedentIds;
+    }
+
+    public void setPrecedentIds(String precedentIds) {
+        this.precedentIds = precedentIds;
+    }
+
+    public String getReviewNote() {
+        return reviewNote;
+    }
+
+    public void setReviewNote(String reviewNote) {
+        this.reviewNote = reviewNote;
     }
 
     public String getReasoning() {
