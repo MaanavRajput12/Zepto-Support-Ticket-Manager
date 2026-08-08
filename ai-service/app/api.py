@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 
-from decision import decide_action
+from app.decision import decide_action
 
 app = FastAPI(title="Zepto Support Ticket AI")
 

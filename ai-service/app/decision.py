@@ -1,5 +1,5 @@
-from similarity import find_similar_tickets
-from order_context import get_order_context
+from app.similarity import find_similar_tickets
+from app.order_context import get_order_context
 
 
 # Minimum similarity required for automatic resolution
