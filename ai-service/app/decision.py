@@ -1,17 +1,20 @@
 from similarity import find_similar_tickets
+from order_context import get_order_context
 
 
 # Minimum similarity required for automatic resolution
 CONFIDENCE_THRESHOLD = 0.70
 
 
-def decide_action(new_ticket):
+def decide_action(new_ticket, order_id):
     """
     Decide whether a ticket can be auto-resolved
     or should be sent to a human agent.
     """
 
     results = find_similar_tickets(new_ticket, top_k=3)
+
+    order = get_order_context(order_id)
 
     # Get similarity of the best matching ticket
     top_similarity = results[0]["similarity"]
@@ -41,7 +44,21 @@ def decide_action(new_ticket):
 
     chosen_action = actions[0]
 
-    # Rule 3: historical escalation should remain human
+    # Rule 3: cancelled orders cannot be redelivered
+    if (
+        order
+        and order["delivery_status"] == "cancelled"
+        and chosen_action == "redelivery"
+    ):
+        return {
+            "decision": "human",
+            "action": None,
+            "confidence": top_similarity,
+            "reason": "Order is cancelled, so redelivery is not allowed",
+            "precedents": results
+        }
+
+    # Rule 4: historical escalation should remain human
     if chosen_action == "escalation":
         return {
             "decision": "human",
@@ -64,8 +81,11 @@ def decide_action(new_ticket):
 # Test
 if __name__ == "__main__":
 
-    test_ticket = "my delivery driver left the order on the roof and disappeared"
-    result = decide_action(test_ticket)
+    # This order is cancelled.
+    # The ticket normally results in redelivery,
+    # but redelivery must not happen for a cancelled order.
+    test_ticket = "milk packet missing from my order"
+    result = decide_action(test_ticket, "ORD-9905")
 
     print("\nDECISION")
     print("Decision:", result["decision"])
